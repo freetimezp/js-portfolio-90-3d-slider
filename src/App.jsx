@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import './App.css';
+
+import images from "./images";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [cards, setCards] = useState([]);
+
+  const handleScroll = () => {
+    const scrollPos = window.scrollY;
+    const slider = document.querySelector(".slider");
+
+    const initialTransform = `translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg)`;
+    const zOffset = scrollPos * 0.5;
+
+    slider.style.transform = `${initialTransform} translateY(${zOffset}px)`;
+  };
+
+  const handleMouseOver = (e) => {
+    e.currentTarget.style.left = '15%';
+  };
+
+  const handleMouseOut = (e) => {
+    e.currentTarget.style.left = '0%';
+  };
+
+  useEffect(() => {
+    const newCards = images.map((img, index) => ({
+      id: index + 1,
+      imgSrc: img
+    }));
+
+    setCards(newCards);
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="slider">
+        {cards.map((card) => (
+          <div key={card.id} className='card' onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
+            <img src={card.imgSrc} alt="card" />
+          </div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
